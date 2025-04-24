@@ -8,65 +8,48 @@ To write a program to predict the profit of a city using the linear regression m
 2. Anaconda – Python 3.7 Installation / Jupyter notebook
 
 ## Algorithm
-1. Import the required library and read the dataframe.
-2. Write a function computeCost to generate the cost function.
-3. Perform iterations og gradient steps with learning rate.
-4. Plot the Cost function 
+1.Import necessary libraries.
+2.Load and inspect the dataset.
+3.Normalize the data.
+4.Implement the cost function and gradient descent manually.
+5.Train the model using the normalized data.
+6.Make a prediction using the trained model.
+7.Reverse scale to get the original prediction value.
+
+
 
 ## Program:
-```
-/*
-Program to implement the linear regression using gradient descent.
-Developed by:T Ajay
-RegisterNumber: 212223230007
-*/
-```
+# Program to implement linear regression using gradient descent.
+# Developed by: T Ajay
+# Register Number: 212223230007
 ```
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 def linear_regression(X1, y, learning_rate=0.01, num_iters=1000):
-    # Add a column of ones to X for the intercept term
-    X = np.c_[np.ones(len(X1)), X1]
-    # Initialize theta with zeros
-    theta = np.zeros(X.shape[1]).reshape(-1,1)
-    # Perform gradient descent
+    X = np.c_[np.ones(len(X1)), X1]  # Add intercept
+    theta = np.zeros(X.shape[1]).reshape(-1, 1)
+
     for _ in range(num_iters):
-        # calculate prediction
-        predictions = (X).dot(theta).reshape(-1,1)
-        # calculate errors
-        errors = (predictions - y).reshape(-1,1)
-        # Update theta using gradient descent
+        predictions = X.dot(theta)
+        errors = predictions - y
         theta -= learning_rate * (1/len(X1)) * X.T.dot(errors)
     return theta
 data = pd.read_csv('50_Startups.csv')
-print(data.head())
+print("Dataset Preview:\n", data.head())
+X = data.iloc[1:, :-2].astype(float).values 
+y = data.iloc[1:, -1].astype(float).values.reshape(-1, 1)
+scaler_X = StandardScaler()
+scaler_y = StandardScaler()
+X_scaled = scaler_X.fit_transform(X)
+y_scaled = scaler_y.fit_transform(y)
+theta = linear_regression(X_scaled, y_scaled)
+new_data = np.array([[165349.2, 136897.8, 471784.1]])
+new_data_scaled = scaler_X.transform(new_data)
+prediction_scaled = np.dot(np.c_[np.ones((1, 1)), new_data_scaled], theta)
+prediction = scaler_y.inverse_transform(prediction_scaled)
+print(f"Predicted Profit: {prediction[0][0]}")
 ```
-```
-# Assuming the last column is your target variable 'y' and the preceding columns a
-X = (data.iloc[1:, :-2].values)
-print(X)
-X1 = X.astype(float)
-scaler = StandardScaler()
-y = (data.iloc[1:,-1].values).reshape(-1,1)
-print(y)
-X1_Scaled = scaler.fit_transform(X1)
-Y1_Scaled = scaler.fit_transform(y)
-print(X1_Scaled)
-print(Y1_Scaled)
-```
-```
-#Learn model parameters
-theta = linear_regression(X1_Scaled, Y1_Scaled)
-#Predict target value for a new data point
-new_data = np.array([165349.2,136897.8,471784.1]).reshape(-1,1)
-new_Scaled = scaler.fit_transform(new_data)
-prediction = np.dot(np.append(1, new_Scaled), theta)
-prediction = prediction.reshape(-1,1)
-pre = scaler.inverse_transform(prediction)
-print(f"Predicted value: (pre)")
-```
-
 ## Output:
 ![image](https://github.com/user-attachments/assets/0a709d39-5645-4188-b3a7-fec345a7fe86)
 
